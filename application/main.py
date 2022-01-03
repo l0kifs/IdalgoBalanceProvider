@@ -1,7 +1,7 @@
 import configparser
 import json
 import logging.config
-import os
+import os, os.path as path
 import re
 from datetime import datetime
 from time import sleep
@@ -21,7 +21,7 @@ class IdalgoClient(BaseClass):
         self._session = requests.Session()
 
         self._config = configparser.ConfigParser()
-        self._conf_file_path = os.path.join(os.getcwd(), 'persistent_data', 'config', 'idalgo_client.conf')
+        self._conf_file_path = os.path.join(path.dirname(path.abspath(__file__)), 'persistent_data', 'config', 'idalgo_client.conf')
         self.read_config(self._conf_file_path)
         return
 
@@ -81,7 +81,7 @@ class MQTTClient(BaseClass):
         super().__init__()
         self._client = mqtt.Client()
         self._config = configparser.ConfigParser()
-        self._conf_file_path = os.path.join(os.getcwd(), 'persistent_data', 'config', 'mqtt_client.conf')
+        self._conf_file_path = os.path.join(path.dirname(path.abspath(__file__)), 'persistent_data', 'config', 'mqtt_client.conf')
         self.read_config(self._conf_file_path)
         return
 
@@ -147,12 +147,12 @@ class MQTTClient(BaseClass):
 
 
 if __name__ == '__main__':
-    logging_conf_file_path = os.path.join(os.getcwd(), 'persistent_data', 'config', 'logging.conf')
+    logging_conf_file_path = path.join(path.dirname(path.abspath(__file__)), 'persistent_data', 'config', 'logging.conf')
     logging.config.fileConfig(logging_conf_file_path)
     logger = logging.getLogger(__name__)
 
     app_config = configparser.ConfigParser()
-    app_conf_file_path = os.path.join(os.getcwd(), 'persistent_data', 'config', 'app.conf')
+    app_conf_file_path = os.path.join(path.dirname(path.abspath(__file__)), 'persistent_data', 'config', 'app.conf')
     app_config.read(app_conf_file_path)
 
     logger.info('Application started')
