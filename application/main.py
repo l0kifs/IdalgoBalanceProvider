@@ -8,12 +8,6 @@ from time import sleep
 import paho.mqtt.client as mqtt
 import requests
 
-logging.config.fileConfig("persistent_data/config/logging.conf")
-logger = logging.getLogger(__name__)
-
-app_config = configparser.ConfigParser()
-app_config.read("persistent_data/config/app.conf")
-
 
 class BaseClass(object):
     def __init__(self):
@@ -149,17 +143,24 @@ class MQTTClient(BaseClass):
 
 
 if __name__ == '__main__':
+    logging.config.fileConfig("persistent_data/config/logging.conf")
+    logger = logging.getLogger(__name__)
+
+    app_config = configparser.ConfigParser()
+    app_config.read("persistent_data/config/app.conf")
+
     logger.info('Application started')
     idalgo = IdalgoClient()
     mqtt = MQTTClient()
 
     server_started = datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%S')
     error_count = 0
+    last_error = None
     current_balance = 0
 
     mqtt.connect()
     mqtt.publish_system_state(server_started, error_count, None)
-    mqtt.publish_config()
+    #mqtt.publish_config()
 
     while True:
         try:
@@ -174,8 +175,10 @@ if __name__ == '__main__':
 
         except Exception as e:
             error_count += 1
-            mqtt.connect()
-            mqtt.publish_system_state(server_started, error_count, e)
+            last_error = e
+
+        mqtt.connect()
+        mqtt.publish_system_state(server_started, error_count, last_error)
 
         timeout_min = int(app_config['settings']['timeout'])
         sleep(timeout_min * 60)
