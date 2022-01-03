@@ -177,6 +177,5 @@ if __name__ == '__main__':
             mqtt.connect()
             mqtt.publish_system_state(server_started, error_count, e)
 
-        finally:
-            timeout_min = int(app_config['settings']['timeout'])
-            sleep(timeout_min * 60)
+        timeout_min = int(app_config['settings']['timeout'])
+        sleep(timeout_min * 60)
