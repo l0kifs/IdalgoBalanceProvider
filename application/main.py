@@ -1,10 +1,10 @@
 import configparser
 import json
 import logging.config
+import os
 import re
 from datetime import datetime
 from time import sleep
-from pathlib import Path
 
 import paho.mqtt.client as mqtt
 import requests
@@ -19,11 +19,13 @@ class IdalgoClient(BaseClass):
     def __init__(self):
         super().__init__()
         self._session = requests.Session()
+
         self._config = configparser.ConfigParser()
-        self.read_config()
+        self._conf_file_path = os.path.join(os.getcwd(), 'persistent_data', 'config', 'idalgo_client.conf')
+        self.read_config(self._conf_file_path)
         return
 
-    def read_config(self, file=Path('persistent_data/config/idalgo_client.conf').absolute()):
+    def read_config(self, file):
         try:
             self._config.read(file)
             self.log.info('Configuration file read')
@@ -79,10 +81,11 @@ class MQTTClient(BaseClass):
         super().__init__()
         self._client = mqtt.Client()
         self._config = configparser.ConfigParser()
-        self.read_config()
+        self._conf_file_path = os.path.join(os.getcwd(), 'persistent_data', 'config', 'mqtt_client.conf')
+        self.read_config(self._conf_file_path)
         return
 
-    def read_config(self, file=Path('persistent_data/config/mqtt_client.conf').absolute()):
+    def read_config(self, file):
         try:
             self._config.read(file)
             self.log.info('Configuration file read')
@@ -144,11 +147,13 @@ class MQTTClient(BaseClass):
 
 
 if __name__ == '__main__':
-    logging.config.fileConfig(Path("persistent_data/config/logging.conf").absolute())
+    logging_conf_file_path = os.path.join(os.getcwd(), 'persistent_data', 'config', 'logging.conf')
+    logging.config.fileConfig(logging_conf_file_path)
     logger = logging.getLogger(__name__)
 
     app_config = configparser.ConfigParser()
-    app_config.read(Path("persistent_data/config/app.conf").absolute())
+    app_conf_file_path = os.path.join(os.getcwd(), 'persistent_data', 'config', 'app.conf')
+    app_config.read(app_conf_file_path)
 
     logger.info('Application started')
     idalgo = IdalgoClient()
