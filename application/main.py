@@ -4,6 +4,7 @@ import logging.config
 import re
 from datetime import datetime
 from time import sleep
+from pathlib import Path
 
 import paho.mqtt.client as mqtt
 import requests
@@ -22,7 +23,7 @@ class IdalgoClient(BaseClass):
         self.read_config()
         return
 
-    def read_config(self, file='persistent_data/config/idalgo_client.conf'):
+    def read_config(self, file=Path('persistent_data/config/idalgo_client.conf').absolute()):
         try:
             self._config.read(file)
             self.log.info('Configuration file read')
@@ -81,7 +82,7 @@ class MQTTClient(BaseClass):
         self.read_config()
         return
 
-    def read_config(self, file='persistent_data/config/mqtt_client.conf'):
+    def read_config(self, file=Path('persistent_data/config/mqtt_client.conf').absolute()):
         try:
             self._config.read(file)
             self.log.info('Configuration file read')
@@ -143,11 +144,11 @@ class MQTTClient(BaseClass):
 
 
 if __name__ == '__main__':
-    logging.config.fileConfig("persistent_data/config/logging.conf")
+    logging.config.fileConfig(Path("persistent_data/config/logging.conf").absolute())
     logger = logging.getLogger(__name__)
 
     app_config = configparser.ConfigParser()
-    app_config.read("persistent_data/config/app.conf")
+    app_config.read(Path("persistent_data/config/app.conf").absolute())
 
     logger.info('Application started')
     idalgo = IdalgoClient()
